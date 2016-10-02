@@ -28,6 +28,7 @@ from sigma_core.views.group_member import GroupMemberViewSet
 from sigma_core.views.group_member_value import GroupMemberValueViewSet
 from sigma_core.views.group_field import GroupFieldViewSet
 from sigma_core.views.validator import ValidatorViewSet
+from sigma_chat.views.chat_member import ChatMemberViewSet
 
 router.register(r'group', GroupViewSet)
 router.register(r'group-field', GroupFieldViewSet)
@@ -36,6 +37,7 @@ router.register(r'group-member-value', GroupMemberValueViewSet)
 router.register(r'cluster', ClusterViewSet)
 router.register(r'user', UserViewSet)
 router.register(r'validator', ValidatorViewSet)
+router.register(r'chat_members', ChatMemberViewSet)
 
 from sigma_files.views import ImageViewSet
 
