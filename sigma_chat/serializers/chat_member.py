@@ -9,7 +9,8 @@ class ChatMemberSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = ChatMember
+        exclude = ('user', 'chat')
 
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    chat = serializers.PrimaryKeyRelatedField(read_only=True)
-    chatmember_message = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    user_id = serializers.PrimaryKeyRelatedField(read_only=True, source="user")
+    chat_id = serializers.PrimaryKeyRelatedField(read_only=True, source="chat")
+    chatmember_message_id = serializers.PrimaryKeyRelatedField(read_only=True, many=True, source="chatmember_message")

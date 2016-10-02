@@ -12,6 +12,10 @@ class MessageSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Message
+        exclude = ('chat', 'chatmember')
+
+    chat_id = serializers.PrimaryKeyRelatedField(read_only=True, source="chat")
+    chatmember_id = serializers.PrimaryKeyRelatedField(read_only=True, source="chatmember")
 
     def validate_chat(self, chat):
         print(chat)
