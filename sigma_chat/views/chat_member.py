@@ -16,7 +16,7 @@ from sigma_chat.models.chat import Chat
 class ChatMemberFilterBackend(BaseFilterBackend):
     filter_q = {
         'user': lambda u: Q(user=u),
-        'chat': lambda g: Q(chat=c)
+        'chat': lambda c: Q(chat=c)
     }
 
     def filter_queryset(self, request, queryset, view):
@@ -60,6 +60,6 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
         return super().list(request)
 
     @decorators.detail_route(methods=['post'])
-    def send_message(self, request):
+    def send_message(self, request, pk=None):
         
         return False

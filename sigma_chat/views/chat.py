@@ -66,7 +66,7 @@ class ChatViewSet(viewsets.ModelViewSet):
         try:
             chat = Chat.objects.get(pk=pk)
             user = User.objects.get(pk=request.data.get('user_id', None))
-            if not request.user.is_admin(chat):
+            if not request.user.is_chat_admin(chat):
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
             # Already chat member ?
@@ -76,7 +76,7 @@ class ChatViewSet(viewsets.ModelViewSet):
             except ChatMember.DoesNotExist:
                 pass
 
-            ChatMember.create(chat=chat, user=user, is_creator=False, is_amin=False)
+            ChatMember.create(chat=chat, user=user, is_creator=False, is_admin=False)
             s = ChatSerializer(chat)
             return Response(s.data, status=status.HTTP_200_OK)
 
@@ -84,3 +84,51 @@ class ChatViewSet(viewsets.ModelViewSet):
             raise Http404("Chat %d not found" % pk)
         except User.DoesNotExist:
             raise Http404("User %d not found" % request.data.get('user_id', None))
+
+    @decorators.detail_route(methods=['put'])
+    def change_role(self, request, pk=None):
+        """
+        Change the permissions of user in chat pk.
+        ---
+        omit_serializer: true
+        parameters_strategy:
+            form: replace
+        parameters:
+            - name: user_id
+              type: integer
+              required: true
+        """
+        try:
+            chat = Chat.objects.get(pk=pk)
+            chatmember = ChatMember.objects.get(pk=request.data.get('chatmember_id', None))
+            if chatmember.is_creator or ((not request.user.is_chat_admin(chat)) and not (chatmember.is_member or chatmember.is_banned)) :
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
+            # Already chat member ?
+            role = request.data.get('chatmember_id', None)
+            if(role == "admin"):
+                chatmember.is_admin = True
+                chatmember.is_member = True
+                chatmember.is_banned = False
+                chatmember.save()
+                s = ChatMemberSerializer(chatmember)
+                return Response(s.data, status=status.HTTP_200_OK)
+            if(role == "member"):
+                chatmember.is_admin = False
+                chatmember.is_member = True
+                chatmember.is_banned = False
+                chatmember.save()
+                s = ChatMemberSerializer(chatmember)
+                return Response(s.data, status=status.HTTP_200_OK)
+            if(role == "banned"):
+                chatmember.is_admin = False
+                chatmember.is_member = False
+                chatmember.is_banned = True
+                chatmember.save()
+                s = ChatMemberSerializer(chatmember)
+                return Response(s.data, status=status.HTTP_200_OK)
+
+        except Chat.DoesNotExist:
+            raise Http404("Chat %d not found" % pk)
+        except ChatMember.DoesNotExist:
+            raise Http404("ChatMember %d not found" % request.data.get('chatmember_id', None))

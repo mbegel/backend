@@ -39,7 +39,7 @@ router.register(r'group-member-value', GroupMemberValueViewSet)
 router.register(r'cluster', ClusterViewSet)
 router.register(r'user', UserViewSet)
 router.register(r'validator', ValidatorViewSet)
-router.register(r'chat-member', ChatMemberViewSet)
+router.register(r'chatmember', ChatMemberViewSet)
 router.register(r'chat', ChatViewSet)
 router.register(r'message', MessageViewSet)
 
