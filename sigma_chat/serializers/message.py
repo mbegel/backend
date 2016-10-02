@@ -18,7 +18,6 @@ class MessageSerializer(serializers.ModelSerializer):
     chatmember_id = serializers.PrimaryKeyRelatedField(read_only=True, source="chatmember")
 
     def validate_chat(self, chat):
-        print(chat)
         return chat
 
     def validate(self, data):
