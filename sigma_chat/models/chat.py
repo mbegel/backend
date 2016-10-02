@@ -18,12 +18,12 @@ class Chat(models.Model):
         return True
 
     def has_object_read_permission(self, request):
-        return request.user.is_member(self)
+        return request.user.is_chat_member(self)
 
     @staticmethod
     def has_write_permission(request):
         return True
 
     def has_object_write_permission(self, request):
-        return request.user.is_admin(self)
+        return request.user.is_chat_admin(self)
         

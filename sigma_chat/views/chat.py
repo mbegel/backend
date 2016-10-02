@@ -76,7 +76,7 @@ class ChatViewSet(viewsets.ModelViewSet):
             except ChatMember.DoesNotExist:
                 pass
 
-            ChatMember.create(chat=chat, user=user, role="M")
+            ChatMember.create(chat=chat, user=user, is_creator=False, is_amin=False)
             s = ChatSerializer(chat)
             return Response(s.data, status=status.HTTP_200_OK)
 
