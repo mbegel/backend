@@ -12,8 +12,8 @@ class ChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
 
-    messages = serializers.PrimaryKeyRelatedField(read_only=True, many=True, source="message")
-    members = serializers.PrimaryKeyRelatedField(read_only=True, many=True, source="chatmember")
+    #messages = serializers.PrimaryKeyRelatedField(read_only=True, many=True, source="message")
+    #members = serializers.PrimaryKeyRelatedField(read_only=True, many=True, source="chatmember")
 
     def create(self, data):
         chat = Chat(**data)
