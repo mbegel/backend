@@ -12,4 +12,4 @@ class ChatMemberSerializer(serializers.ModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     chat = serializers.PrimaryKeyRelatedField(read_only=True)
-    #chatmember_message = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    chatmember_message = serializers.PrimaryKeyRelatedField(read_only=True, many=True)

@@ -59,18 +59,7 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
         """
         return super().list(request)
 
-    def create(self, request):
-        serializer = ChatMemberSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if not request.user.is_admin(serializer.validated_data.get('chat')):
-            return Response('You cannot add someone to a chat', status=status.HTTP_403_FORBIDDEN)
-
-        try:
-            chat = Chat.objects.get(pk=request.data.get('chat_id', None))
-        except Chat.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        mem = serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @decorators.detail_route(methods=['post'])
+    def send_message(self, request):
+        
+        return False

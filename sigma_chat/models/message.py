@@ -5,16 +5,17 @@ from sigma_chat.models.chat_member import ChatMember
 from sigma_chat.models.chat import Chat
 
 
+def chat_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'uploads/chats/{0}/{1}'.format(instance.chat.id, filename)
+
+
 class Message(models.Model):
     text = models.TextField()
     chatmember = models.ForeignKey(ChatMember, related_name='chatmember_message')
     chat = models.ForeignKey(Chat, related_name='message')
     date = models.DateTimeField(auto_now=True)
-    attachment = models.FileField(upload_to=chat_directory_path)
-
-    def chat_directory_path(self, filename):
-        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return 'uploads/chats/{0}/{1}'.format(self.chat.id, filename)
+    attachment = models.FileField(upload_to=chat_directory_path, blank=True)
 
     ################################################################
     # PERMISSIONS                                                  #
