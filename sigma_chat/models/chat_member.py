@@ -25,7 +25,7 @@ class ChatMember(models.Model):
 
     def has_object_read_permission(self, request):
         # Return True if user is the one of this ChatMember or if user is admin on the related chat
-        return request.user.is_member(self.chat)
+        return request.user.is_chat_member(self.chat)
 
     @staticmethod
     def has_write_permission(request):
@@ -33,4 +33,4 @@ class ChatMember(models.Model):
 
     def has_object_write_permission(self, request):
         # Return True if user is the one of this ChatMember or if user is admin on the related chat
-        return (not request.user.is_creator(self.chat)) and (request.user == self.user or request.user.is_admin(self.chat))
+        return (not request.user.is_chat_creator(self.chat)) and (request.user == self.user or request.user.is_chat_admin(self.chat))
