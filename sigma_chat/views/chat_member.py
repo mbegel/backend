@@ -12,6 +12,7 @@ from sigma_chat.models.chat_member import ChatMember
 from sigma_chat.serializers.chat_member import ChatMemberSerializer
 from sigma_chat.models.chat import Chat
 from sigma_chat.models.message import Message
+from sigma_chat.serializers.message import MessageSerializer
 
 
 class ChatMemberFilterBackend(BaseFilterBackend):
@@ -78,7 +79,7 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
             if not chatmember.is_member :
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
-            message = self.serializer_class(data=request.data)
+            message = MessageSerializer(data=request.data)
             if message.is_valid():
                 message.save()
                 return Response(message.data, status=status.HTTP_201_CREATED)
