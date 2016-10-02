@@ -80,6 +80,7 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
             request.data['chat'] = chatmember.chat.id
+            request.data['chatmember'] = chatmember.id
             message = MessageSerializer(data=request.data)
             if message.is_valid():
                 message.save()
