@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from chat_member import ChatMember
-from chat import Chat
+from sigma_chat.models.chat_member import ChatMember
+from sigma_chat.models.chat import Chat
 
 
 class Message(models.Model):
     text = models.TextField()
     chatmember = models.ForeignKey(ChatMember, related_name='chatmember_message')
-    chat = models.ForeignKey(Chat, related_name='chat_message')
+    chat = models.ForeignKey(Chat, related_name='message')
     date = models.DateTimeField(auto_now=True)
     attachment = models.FileField(upload_to=chat_directory_path)
 

@@ -10,10 +10,10 @@ class ChatMember(models.Model):
     is_member = models.BooleanField(default=True)
     is_banned = models.BooleanField(default=False)
     user = models.ForeignKey('sigma_core.User', related_name='user_chatmember')
-    chat = models.ForeignKey(Chat, related_name='chat_chatmember')
+    chat = models.ForeignKey(Chat, related_name='chatmember')
     
     # Related fields : 
-    #     _member_message (model Message.member)
+    #     - member_message (model Message.member)
 
     ################################################################
     # PERMISSIONS                                                  #

@@ -6,8 +6,8 @@ class Chat(models.Model):
     name = models.CharField(max_length=50)
     
     # Related fields : 
-    #     _chat_chatmember (model ChatMember.chat)
-    #     _chat_message (model Message.chat)
+    #     - chatmember (model ChatMember.chat)
+    #     - message (model Message.chat)
 
     ################################################################
     # PERMISSIONS                                                  #

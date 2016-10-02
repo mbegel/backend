@@ -26,7 +26,7 @@ class ChatMemberFilterBackend(BaseFilterBackend):
         user_chat_ids = request.user.user_chatmember.filter(is_member=True).values_list('chat_id', flat=True)
         # I can see a ChatMember if and only I am member of the chat
         queryset = queryset.prefetch_related(
-            Prefetch('user_chatmember', queryset=ChatMember.objects.filter(is_member=True))
+            Prefetch('user', queryset=ChatMember.objects.filter(is_member=True))
         ).filter(Q(user_id=request.user.id) | Q(chat_id__in=user_chat_ids)
         )
 
