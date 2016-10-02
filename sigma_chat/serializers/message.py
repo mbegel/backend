@@ -18,13 +18,13 @@ class MessageSerializer(serializers.ModelSerializer):
         return chat
 
     def validate(self, data):
-        print(data)
-
         if "chatmember" not in data:
             raise ValidationError("No user given.")
         if "chat" not in data:
             raise ValidationError("No chat given.")
         if data['chat'].id != data['chatmember'].chat.id:
             raise ValidationError("ChatMember not allowed to publish on this chat.")
+        if data['text'] is None and data['attachment'] is None:
+            raise ValidationError("You must send either a text or a file.")
 
         return data

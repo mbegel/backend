@@ -94,19 +94,27 @@ class ChatViewSet(viewsets.ModelViewSet):
         parameters_strategy:
             form: replace
         parameters:
-            - name: user_id
+            - name: chatmember_id
               type: integer
+              required: true
+            - name: role
+              type: string
               required: true
         """
         try:
             chat = Chat.objects.get(pk=pk)
             chatmember = ChatMember.objects.get(pk=request.data.get('chatmember_id', None))
-            if chatmember.is_creator or ((not request.user.is_chat_admin(chat)) and not (chatmember.is_member or chatmember.is_banned)) :
+            """
+                - cannot change the role of the creator
+                - if has quit the conversation, can rejoin, but administrator cannot force it
+                - if not admin, only can REjoin conversation if not banned
+            """
+            has_ragequit = request.user == chatmember.user and not (chatmember.is_member or chatmember.is_banned)
+            if chatmember.is_creator or (not has_ragequit) or ((not request.user.is_chat_admin(chat)) and not (chatmember.is_member or chatmember.is_banned)) :
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
-            # Already chat member ?
-            role = request.data.get('chatmember_id', None)
-            if(role == "admin"):
+            role = request.data.get('role', None)
+            if(role == "admin" and not has_ragequit):
                 chatmember.is_admin = True
                 chatmember.is_member = True
                 chatmember.is_banned = False
@@ -120,13 +128,14 @@ class ChatViewSet(viewsets.ModelViewSet):
                 chatmember.save()
                 s = ChatMemberSerializer(chatmember)
                 return Response(s.data, status=status.HTTP_200_OK)
-            if(role == "banned"):
+            if(role == "banned" and not has_ragequit):
                 chatmember.is_admin = False
                 chatmember.is_member = False
                 chatmember.is_banned = True
                 chatmember.save()
                 s = ChatMemberSerializer(chatmember)
                 return Response(s.data, status=status.HTTP_200_OK)
+            return Response("Incorrect role.", status=status.HTTP_400_BAD_REQUEST)
 
         except Chat.DoesNotExist:
             raise Http404("Chat %d not found" % pk)

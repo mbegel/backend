@@ -11,7 +11,7 @@ def chat_directory_path(instance, filename):
 
 
 class Message(models.Model):
-    text = models.TextField()
+    text = models.TextField(blank=True)
     chatmember = models.ForeignKey(ChatMember, related_name='chatmember_message')
     chat = models.ForeignKey(Chat, related_name='message')
     date = models.DateTimeField(auto_now=True)
@@ -33,4 +33,4 @@ class Message(models.Model):
         return True
 
     def has_object_write_permission(self, request):
-        return request.user == self.chatmember.user
+        return request.user == self.chatmember.user and self.chatmember.is_member

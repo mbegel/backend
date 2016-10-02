@@ -11,6 +11,7 @@ from sigma_core.models.user import User
 from sigma_chat.models.chat_member import ChatMember
 from sigma_chat.serializers.chat_member import ChatMemberSerializer
 from sigma_chat.models.chat import Chat
+from sigma_chat.models.message import Message
 
 
 class ChatMemberFilterBackend(BaseFilterBackend):
@@ -61,5 +62,29 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
 
     @decorators.detail_route(methods=['post'])
     def send_message(self, request, pk=None):
-        
+        """
+        Send a message for the ChatMember pk.
+        ---
+        omit_serializer: true
+        parameters_strategy:
+            form: replace
+        parameters:
+            - name: text
+              type: integer
+              required: true
+        """
+        try:
+            chatmember = ChatMember.objects.get(pk=pk)
+            if not chatmember.is_member :
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
+            message = self.serializer_class(data=request.data)
+            if message.is_valid():
+                message.save()
+                return Response(message.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(message.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except ChatMember.DoesNotExist:
+            raise Http404("ChatMember %d not found" % request.data.get('chatmember_id', None))
         return False
