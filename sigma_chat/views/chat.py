@@ -110,36 +110,34 @@ class ChatViewSet(viewsets.ModelViewSet):
                 - if has quit the conversation, can rejoin, but administrator cannot force it
                 - if not admin, only can REjoin conversation if not banned
             """
-            has_ragequit = request.user == chatmember.user and not (chatmember.is_member or chatmember.is_banned)
-            if chatmember.is_creator or (not has_ragequit) or ((not request.user.is_chat_admin(chat)) and not (chatmember.is_member or chatmember.is_banned)) :
+            role = request.data.get('role', None)
+            is_admin = request.user.is_chat_admin(chat)
+            not_has_left = chatmember.is_member or chatmember.is_banned
+            has_ragequit = request.user == chatmember.user and not not_has_left
+            may_change = is_admin and not_has_left
+
+            if chatmember.is_creator:
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
-            role = request.data.get('role', None)
-            if(role == "admin" and not has_ragequit):
+            chatmember.is_admin = False
+            chatmember.is_member = False
+            chatmember.is_banned = False
+            changed = False
+            if(role == "admin" and may_change):
+                if has_ragequit:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
                 chatmember.is_admin = True
                 chatmember.is_member = True
-                chatmember.is_banned = False
-                chatmember.save()
-                s = ChatMemberSerializer(chatmember)
-                return Response(s.data, status=status.HTTP_200_OK)
-            if(role == "member"):
-                chatmember.is_admin = False
+                changed = True
+            if role == "member" and (may_change or has_rage_quit):
                 chatmember.is_member = True
-                chatmember.is_banned = False
-                chatmember.save()
-                s = ChatMemberSerializer(chatmember)
-                return Response(s.data, status=status.HTTP_200_OK)
-            if(role == "banned" and not has_ragequit):
-                chatmember.is_admin = False
-                chatmember.is_member = False
+                changed = True
+            if(role == "banned" and may_change):
                 chatmember.is_banned = True
-                chatmember.save()
-                s = ChatMemberSerializer(chatmember)
-                return Response(s.data, status=status.HTTP_200_OK)
-            if(role == "leave"):
-                chatmember.is_admin = False
-                chatmember.is_member = False
-                chatmember.is_banned = False
+                changed = True
+            if(role == "leave" and not request.user.is_chat_banned()):
+                changed = True
+            if changed:
                 chatmember.save()
                 s = ChatMemberSerializer(chatmember)
                 return Response(s.data, status=status.HTTP_200_OK)

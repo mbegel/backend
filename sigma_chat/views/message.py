@@ -24,7 +24,7 @@ class MessageFilterBackend(DRYPermissionFiltersBase):
         Limits all list requests w.r.t the Normal Rules of Visibility.
         """
         user_chat_ids = request.user.user_chatmember.filter(is_member=True).values_list('chat_id', flat=True)
-        queryset = queryset.prefetch_related('chat_id', 'chat_member_id') \
+        queryset = queryset.prefetch_related('chat_id', 'chatmember_id') \
             .filter(chat_id__in=user_chat_ids)
 
         for (param, q) in self.filter_q.items():

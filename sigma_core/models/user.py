@@ -177,6 +177,10 @@ class User(AbstractBaseUser):
     def is_chat_creator(self, chat):
         mem = self.get_chat_membership(chat)
         return mem is not None and mem.is_creator
+
+    def is_chat_banned(self, chat):
+        mem = self.get_chat_membership(chat)
+        return mem is not None and mem.is_banned
         
 
     ###############
