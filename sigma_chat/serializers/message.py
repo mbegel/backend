@@ -6,6 +6,9 @@ from sigma_chat.models.message import Message
 from sigma_core.models.user import User
 from rest_framework.serializers import ValidationError
 
+import requests
+import json
+
 class MessageSerializer(serializers.ModelSerializer):
     """
     Serialize Message model.
@@ -13,11 +16,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
 
-    def validate_chat(self, chat):
-        return chat
-
     def validate(self, data):
-        print(data)
         if "chatmember_id" not in data:
             raise ValidationError("No user given.")
         if "chat_id" not in data:
@@ -28,3 +27,17 @@ class MessageSerializer(serializers.ModelSerializer):
             raise ValidationError("You must send either a text or a file.")
 
         return data
+
+    ################################################################
+    # CHAT                                                         #
+    ################################################################
+    
+    def save(self, *args, **kwargs):
+        super(MessageSerializer, self).save(*args, **kwargs)
+        NO_PROXY = {
+            'no': 'pass',
+        }
+
+        r = requests.post('http://localhost:8000/tornado/chat/?secret_key=', data=json.dumps(self.data), proxies=NO_PROXY)
+        print(r.text)
+

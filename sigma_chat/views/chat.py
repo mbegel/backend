@@ -50,7 +50,7 @@ class ChatViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @decorators.detail_route(methods=['put'])
+    @decorators.detail_route(methods=['post'])
     def add_member(self, request, pk=None):
         """
         Add an user in chat pk.
@@ -76,7 +76,8 @@ class ChatViewSet(viewsets.ModelViewSet):
             except ChatMember.DoesNotExist:
                 pass
 
-            ChatMember.create(chat=chat, user=user, is_creator=False, is_admin=False)
+            c = ChatMember(chat=chat, user=user, is_creator=False, is_admin=False)
+            c.save()
             s = ChatSerializer(chat)
             return Response(s.data, status=status.HTTP_200_OK)
 
@@ -132,6 +133,13 @@ class ChatViewSet(viewsets.ModelViewSet):
                 chatmember.is_admin = False
                 chatmember.is_member = False
                 chatmember.is_banned = True
+                chatmember.save()
+                s = ChatMemberSerializer(chatmember)
+                return Response(s.data, status=status.HTTP_200_OK)
+            if(role == "leave"):
+                chatmember.is_admin = False
+                chatmember.is_member = False
+                chatmember.is_banned = False
                 chatmember.save()
                 s = ChatMemberSerializer(chatmember)
                 return Response(s.data, status=status.HTTP_200_OK)

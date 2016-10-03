@@ -81,9 +81,7 @@ class ChatMemberViewSet(viewsets.ModelViewSet):
 
             request.data['chat_id'] = chatmember.chat.id
             request.data['chatmember_id'] = chatmember.id
-            print(request.data)
             message = MessageSerializer(data=request.data)
-            #print(message.data)
             if message.is_valid():
                 message.save()
                 return Response(message.data, status=status.HTTP_201_CREATED)

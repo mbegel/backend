@@ -15,14 +15,24 @@ from sigma_chat.serializers.message import MessageSerializer
 
 
 class MessageFilterBackend(DRYPermissionFiltersBase):
+    filter_q = {
+        'chat': lambda c: Q(chat_id=c)
+    }
+
     def filter_queryset(self, request, queryset, view):
         """
         Limits all list requests w.r.t the Normal Rules of Visibility.
         """
-        user_chats_ids = request.user.user_chatmember.filter(is_member=True).values_list('chat_id', flat=True)
-        return queryset.prefetch_related('chat_id') \
-            .filter(chatmember_id__user=request.user) \
-            .distinct()
+        user_chat_ids = request.user.user_chatmember.filter(is_member=True).values_list('chat_id', flat=True)
+        queryset = queryset.prefetch_related('chat_id', 'chat_member_id') \
+            .filter(chat_id__in=user_chat_ids)
+
+        for (param, q) in self.filter_q.items():
+            x = request.query_params.get(param, None)
+            if x is not None:
+                queryset = queryset.filter(q(x))
+
+        return queryset.distinct()
 
 
 class MessageViewSet(viewsets.ModelViewSet):
