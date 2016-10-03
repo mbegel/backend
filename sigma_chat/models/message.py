@@ -12,8 +12,8 @@ def chat_directory_path(instance, filename):
 
 class Message(models.Model):
     text = models.TextField(blank=True)
-    chatmember = models.ForeignKey(ChatMember, related_name='chatmember_message')
-    chat = models.ForeignKey(Chat, related_name='message')
+    chatmember_id = models.ForeignKey(ChatMember, related_name='chatmember_message')
+    chat_id = models.ForeignKey(Chat, related_name='message')
     date = models.DateTimeField(auto_now=True)
     attachment = models.FileField(upload_to=chat_directory_path, blank=True)
 
