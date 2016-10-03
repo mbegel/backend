@@ -4,6 +4,8 @@ from django.db import models
 from sigma_chat.models.chat_member import ChatMember
 from sigma_chat.models.chat import Chat
 
+import requests
+
 
 def chat_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -34,3 +36,11 @@ class Message(models.Model):
 
     def has_object_write_permission(self, request):
         return request.user == self.chatmember.user and self.chatmember.is_member
+
+    ################################################################
+    # CHAT                                                         #
+    ################################################################
+
+    def save(self, data):
+        print(self)
+        super(Message, self).save(data)
